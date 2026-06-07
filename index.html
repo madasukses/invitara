@@ -3,12 +3,334 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invitara</title>
-<!-- CSS & JS akan diisi -->
+<title>Invitara — Undangan Digital Pernikahan</title>
+<meta name="description" content="Buat undangan pernikahan digital yang cantik, personal, dan mudah dibagikan. Mulai gratis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>💍</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ── Landing specific ── */
+.landing-nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(250,247,242,.94); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+  height:var(--header-h); display:flex; align-items:center;
+  justify-content:space-between; padding:0 24px;
+}
+.nav-logo { display:flex; align-items:center; gap:10px; cursor:pointer; text-decoration:none; }
+.nav-logo-icon { width:36px; height:36px; background:linear-gradient(135deg,var(--rose),var(--gold)); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.nav-logo-text { font-family:'Playfair Display',serif; font-size:20px; color:var(--text); }
+
+.hero { padding-top:calc(var(--header-h) + 64px); padding-bottom:80px; text-align:center; padding-left:24px; padding-right:24px; }
+.hero-badge { display:inline-flex; align-items:center; gap:8px; background:var(--rose-light); color:var(--rose-dark); padding:6px 18px; border-radius:50px; font-size:13px; font-weight:500; margin-bottom:28px; }
+.hero h1 { font-size:clamp(34px,8vw,62px); line-height:1.15; margin-bottom:20px; }
+.hero h1 em { color:var(--rose); font-style:italic; }
+.hero-sub { font-size:17px; color:var(--text-muted); max-width:480px; margin:0 auto 36px; line-height:1.75; }
+.hero-cta { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-bottom:56px; }
+
+.hero-mockup { background:var(--white); border-radius:24px; border:1px solid var(--border); padding:24px; box-shadow:0 24px 64px rgba(44,36,32,.08); max-width:340px; margin:0 auto; }
+.mockup-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.mockup-avatar { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,var(--rose-light),var(--gold-light)); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.mockup-date-box { background:var(--rose-light); border-radius:12px; padding:16px; text-align:center; margin-bottom:16px; }
+.mockup-date-num { font-family:'Playfair Display',serif; font-size:40px; color:var(--rose); }
+.mockup-date-info { font-size:12px; color:var(--text-muted); }
+.mockup-rsvp { display:flex; gap:8px; }
+.mockup-rsvp button { flex:1; padding:10px; border-radius:10px; font-size:13px; font-weight:500; cursor:pointer; border:none; }
+.mockup-rsvp .yes { background:var(--rose); color:#fff; }
+.mockup-rsvp .no  { background:var(--rose-light); color:var(--rose-dark); }
+
+.section { padding:64px 24px; }
+.section-white { background:var(--white); }
+.section-title { text-align:center; margin-bottom:48px; }
+.section-title h2 { font-size:clamp(26px,5vw,40px); margin-bottom:12px; }
+.section-title p { color:var(--text-muted); font-size:16px; max-width:500px; margin:0 auto; }
+
+.features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:960px; margin:0 auto; }
+.feature-card { background:var(--white); border-radius:var(--radius); padding:28px; border:1px solid var(--border); transition:box-shadow .2s; }
+.feature-card:hover { box-shadow:0 8px 32px rgba(44,36,32,.07); }
+.feature-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+.feature-icon.rose { background:var(--rose-light); }
+.feature-icon.gold { background:var(--gold-light); }
+.feature-icon.sage { background:var(--sage-light); }
+.feature-card h3 { font-size:17px; margin-bottom:8px; }
+.feature-card p { font-size:14px; color:var(--text-muted); line-height:1.65; }
+
+.pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:20px; max-width:920px; margin:0 auto; }
+.pricing-card { background:var(--white); border-radius:var(--radius); padding:32px; border:1.5px solid var(--border); position:relative; transition:box-shadow .2s; }
+.pricing-card.featured { border-color:var(--rose); box-shadow:0 8px 32px rgba(201,123,132,.15); }
+.pricing-badge-top { position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:var(--rose); color:#fff; padding:4px 18px; border-radius:50px; font-size:12px; font-weight:600; white-space:nowrap; }
+.pricing-name  { font-size:13px; color:var(--text-muted); margin-bottom:8px; }
+.pricing-price { font-family:'Playfair Display',serif; font-size:34px; margin-bottom:4px; }
+.pricing-price span { font-size:14px; font-family:'Plus Jakarta Sans',sans-serif; color:var(--text-muted); }
+.pricing-desc  { font-size:13px; color:var(--text-muted); margin-bottom:24px; }
+.pricing-features { list-style:none; margin-bottom:28px; }
+.pricing-features li { display:flex; align-items:center; gap:10px; font-size:14px; padding:8px 0; border-bottom:1px solid var(--border); }
+.pricing-features li:last-child { border-bottom:none; }
+.pricing-features li i { font-size:16px; color:var(--success); flex-shrink:0; }
+.pricing-features li.off i { color:var(--text-light); }
+.pricing-features li.off span { color:var(--text-light); }
+
+.cta-banner { background:linear-gradient(135deg,var(--rose-light),var(--gold-light)); border-radius:24px; padding:52px 28px; text-align:center; margin:0 24px 64px; }
+.cta-banner h2 { font-size:clamp(26px,5vw,38px); margin-bottom:12px; }
+.cta-banner p { color:var(--text-muted); margin-bottom:28px; font-size:16px; }
+
+.landing-footer { background:var(--white); border-top:1px solid var(--border); padding:36px 24px; text-align:center; color:var(--text-muted); font-size:14px; }
+.footer-links { display:flex; justify-content:center; gap:20px; margin-top:10px; flex-wrap:wrap; }
+.footer-links a { color:var(--text-muted); font-size:13px; }
+.footer-links a:hover { color:var(--rose); }
+
+/* Cara kerja steps */
+.steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; max-width:800px; margin:0 auto; }
+.step { text-align:center; }
+.step-num { width:52px; height:52px; border-radius:50%; background:var(--rose); color:#fff; font-family:'Playfair Display',serif; font-size:22px; display:flex; align-items:center; justify-content:center; margin:0 auto 14px; }
+.step h4 { font-size:15px; margin-bottom:6px; }
+.step p { font-size:13px; color:var(--text-muted); line-height:1.6; }
+
+/* Testimoni */
+.testi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; max-width:900px; margin:0 auto; }
+.testi-card { background:var(--white); border-radius:var(--radius); padding:24px; border:1px solid var(--border); }
+.testi-bintang { color:var(--gold); font-size:14px; margin-bottom:10px; }
+.testi-text { font-size:14px; color:var(--text-muted); line-height:1.65; margin-bottom:14px; font-style:italic; }
+.testi-nama { font-size:13px; font-weight:600; }
+.testi-info { font-size:11px; color:var(--text-muted); }
+
+@media(max-width:480px){
+  .hero h1 { font-size:30px; }
+  .pricing-grid { grid-template-columns:1fr; }
+}
+</style>
 </head>
 <body>
-<p style="font-family:sans-serif;text-align:center;padding:40px;color:#888;">
-  File: index.html — akan diisi konten lengkap
-</p>
+
+<!-- Navbar -->
+<nav class="landing-nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">💍</div>
+    <div class="nav-logo-text">Invitara</div>
+  </a>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <a href="auth.html" class="btn btn-outline btn-sm">Masuk</a>
+    <a href="auth.html?tab=daftar" class="btn btn-primary btn-sm">Mulai Gratis</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">✨ Undangan Digital Modern</div>
+  <h1>Undangan Pernikahan <em>Impian</em> Anda</h1>
+  <p class="hero-sub">Buat undangan digital yang cantik, personal, dan mudah dibagikan ke ribuan tamu. Mulai gratis, tanpa ribet, tanpa coding.</p>
+  <div class="hero-cta">
+    <a href="auth.html?tab=daftar" class="btn btn-primary btn-lg">
+      <i class="ti ti-heart" style="font-size:18px;"></i> Buat Undangan Gratis
+    </a>
+    <a href="templates/sakura.html" target="_blank" class="btn btn-outline btn-lg">Lihat Contoh</a>
+  </div>
+  <!-- Mockup -->
+  <div class="hero-mockup">
+    <div class="mockup-header">
+      <div class="mockup-avatar">💑</div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:18px;">Rizky & Anisa</div>
+        <div style="font-size:12px;color:var(--text-muted);">Mengundang kehadiran Anda</div>
+      </div>
+    </div>
+    <div class="mockup-date-box">
+      <div class="mockup-date-num">24</div>
+      <div class="mockup-date-info">Agustus 2025 · Jakarta</div>
+    </div>
+    <div class="mockup-rsvp">
+      <button class="yes">✓ Hadir</button>
+      <button class="no">✗ Tidak Hadir</button>
+    </div>
+  </div>
+</section>
+
+<!-- Cara kerja -->
+<section class="section section-white">
+  <div class="section-title">
+    <h2>Mudah dalam 3 Langkah</h2>
+    <p>Dari daftar sampai undangan terkirim, cukup dalam hitungan menit</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>Daftar & Pilih Tema</h4>
+      <p>Buat akun gratis, pilih dari 50+ tema cantik sesuai selera Anda.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>Isi Data Undangan</h4>
+      <p>Tambahkan data mempelai, acara, galeri foto, musik, dan fitur lainnya.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>Kirim ke Tamu</h4>
+      <p>Bagikan link unik ke tamu via WhatsApp — langsung dari dashboard.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Fitur -->
+<section class="section">
+  <div class="section-title">
+    <h2>Semua yang Anda Butuhkan</h2>
+    <p>Fitur lengkap untuk undangan digital yang berkesan dan profesional</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon rose"><i class="ti ti-palette" style="font-size:22px;color:var(--rose);"></i></div>
+      <h3>50+ Tema Cantik</h3>
+      <p>Modern, adat Jawa, Islami, outdoor — semua tersedia. Setiap tema punya ornamen dan aset lengkap.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon gold"><i class="ti ti-brand-whatsapp" style="font-size:22px;color:var(--gold);"></i></div>
+      <h3>Kirim via WhatsApp</h3>
+      <p>Import daftar tamu dari Excel, kelola RSVP, dan kirim undangan personal via WA dengan satu klik.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon sage"><i class="ti ti-music" style="font-size:22px;color:var(--sage);"></i></div>
+      <h3>50+ Pilihan Musik</h3>
+      <p>Instrumental, jazz, pop romantis, pop Indonesia, islami — streaming langsung tanpa upload file.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon rose"><i class="ti ti-camera" style="font-size:22px;color:var(--rose);"></i></div>
+      <h3>Filter Instagram Story</h3>
+      <p>Bingkai foto 1080×1920 bertemakan pernikahan Anda. Isi nama & tanggal, langsung download.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon gold"><i class="ti ti-gift" style="font-size:22px;color:var(--gold);"></i></div>
+      <h3>Amplop Digital</h3>
+      <p>Terima kado via rekening bank, GoPay, OVO, Dana, atau ShopeePay langsung dari halaman undangan.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon sage"><i class="ti ti-timeline" style="font-size:22px;color:var(--sage);"></i></div>
+      <h3>Kisah Cinta</h3>
+      <p>Timeline perjalanan cinta yang romantis — dari pertama bertemu hingga hari spesial kalian.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Harga -->
+<section class="section section-white">
+  <div class="section-title">
+    <h2>Pilih Paket Anda</h2>
+    <p>Mulai gratis, upgrade kapan saja tanpa kehilangan data</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Gratis</div>
+      <div class="pricing-price">Rp 0 <span>/ undangan</span></div>
+      <div class="pricing-desc">Untuk mencoba semua fitur dasar</div>
+      <ul class="pricing-features">
+        <li><i class="ti ti-check"></i><span>Semua fitur dasar</span></li>
+        <li><i class="ti ti-check"></i><span>RSVP & ucapan tamu</span></li>
+        <li><i class="ti ti-check"></i><span>Buku tamu & kirim WA</span></li>
+        <li class="off"><i class="ti ti-x"></i><span>Watermark di tengah</span></li>
+        <li class="off"><i class="ti ti-x"></i><span>Musik latar</span></li>
+        <li class="off"><i class="ti ti-x"></i><span>Filter Instagram</span></li>
+      </ul>
+      <a href="auth.html" class="btn btn-outline btn-block">Mulai Gratis</a>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-badge-top">⭐ Terpopuler</div>
+      <div class="pricing-name">Standar</div>
+      <div class="pricing-price">Rp 69.000 <span>/ undangan</span></div>
+      <div class="pricing-desc">Untuk undangan yang sempurna</div>
+      <ul class="pricing-features">
+        <li><i class="ti ti-check"></i><span>Semua fitur Gratis</span></li>
+        <li><i class="ti ti-check"></i><span>Tanpa watermark</span></li>
+        <li><i class="ti ti-check"></i><span>Musik latar (50+ lagu)</span></li>
+        <li><i class="ti ti-check"></i><span>Galeri foto maks 30</span></li>
+        <li><i class="ti ti-check"></i><span>Filter Instagram Story</span></li>
+        <li class="off"><i class="ti ti-x"></i><span>Live streaming</span></li>
+      </ul>
+      <a href="auth.html?tab=daftar" class="btn btn-primary btn-block">Pilih Standar</a>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">Premium</div>
+      <div class="pricing-price">Rp 120.000 <span>/ undangan</span></div>
+      <div class="pricing-desc">Pengalaman terbaik tanpa batas</div>
+      <ul class="pricing-features">
+        <li><i class="ti ti-check"></i><span>Semua fitur Standar</span></li>
+        <li><i class="ti ti-check"></i><span>Live streaming YouTube</span></li>
+        <li><i class="ti ti-check"></i><span>Galeri tak terbatas</span></li>
+        <li><i class="ti ti-check"></i><span>Kado digital (rekening & e-wallet)</span></li>
+        <li><i class="ti ti-check"></i><span>Kisah cinta timeline</span></li>
+        <li><i class="ti ti-check"></i><span>Prioritas customer service</span></li>
+      </ul>
+      <a href="auth.html?tab=daftar" class="btn btn-gold btn-block">Pilih Premium</a>
+    </div>
+  </div>
+</section>
+
+<!-- Testimoni -->
+<section class="section">
+  <div class="section-title">
+    <h2>Kata Mereka</h2>
+    <p>Ribuan pasangan sudah menggunakan Invitara</p>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-bintang">★★★★★</div>
+      <p class="testi-text">"Undangannya cantik banget, tamu-tamu pada terkejut kaget waktu buka linknya. Proses bikinnya gampang banget, ga sampai 1 jam sudah selesai!"</p>
+      <div class="testi-nama">Rina & Doni</div>
+      <div class="testi-info">Jakarta · Paket Premium</div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-bintang">★★★★★</div>
+      <p class="testi-text">"Fitur kirim WA-nya itu yang bikin saya pilih Invitara. Hemat banget, ga perlu copy-paste satu-satu. Tamu bisa langsung RSVP dan tulis ucapan."</p>
+      <div class="testi-nama">Siti & Rudi</div>
+      <div class="testi-info">Surabaya · Paket Standar</div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-bintang">★★★★★</div>
+      <p class="testi-text">"Tema Batik Kawung-nya persis yang saya mau untuk nikah adat Jawa. Ornamennya detail dan elegan. Worth banget harganya!"</p>
+      <div class="testi-nama">Dewi & Hendra</div>
+      <div class="testi-info">Yogyakarta · Paket Premium</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div style="padding:0 24px 64px;">
+  <div class="cta-banner">
+    <h2>Siap Membuat Undangan?</h2>
+    <p>Bergabung dengan ribuan pasangan yang sudah menggunakan Invitara</p>
+    <a href="auth.html?tab=daftar" class="btn btn-primary btn-lg">
+      <i class="ti ti-heart" style="font-size:18px;"></i> Mulai Sekarang — Gratis
+    </a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="landing-footer">
+  <div style="font-family:'Playfair Display',serif;font-size:20px;margin-bottom:8px;">Invitara</div>
+  <div>© 2025 Invitara · Undangan Digital Pernikahan · Dibuat dengan ❤️ di Indonesia</div>
+  <div class="footer-links">
+    <a href="#">Syarat & Ketentuan</a>
+    <a href="#">Kebijakan Privasi</a>
+    <a href="auth.html">Masuk</a>
+    <a href="auth.html?tab=daftar">Daftar</a>
+    <a href="mailto:support@invitara.id">Kontak</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script>
+// Cek kalau sudah login, redirect ke dashboard
+window.addEventListener('DOMContentLoaded', async () => {
+  const session = await getSession()
+  if (session) {
+    const profile = await getProfile(session.user.id)
+    window.location.href = profile?.role === 'admin'
+      ? 'dashboard-admin.html'
+      : 'dashboard-customer.html'
+  }
+})
+</script>
 </body>
 </html>
