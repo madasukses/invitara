@@ -3,12 +3,243 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invitara</title>
-<!-- CSS & JS akan diisi -->
+<title>Dashboard — Invitara</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>💍</text></svg>">
+<link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-<p style="font-family:sans-serif;text-align:center;padding:40px;color:#888;">
-  File: dashboard-customer.html — akan diisi konten lengkap
-</p>
+<body style="display:flex;">
+<div id="spinner"><div class="spinner"></div></div>
+<div id="toast"></div>
+
+<!-- Modal Hapus Universal -->
+<div class="modal-backdrop" id="modal-hapus">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Konfirmasi Hapus</div><button class="modal-close" onclick="closeModal('modal-hapus')"><i class="ti ti-x" style="font-size:16px;"></i></button></div>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;" id="hapus-text">Yakin ingin menghapus?</p>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-hapus')">Batal</button>
+      <button class="btn btn-danger" style="flex:1;justify-content:center;" id="hapus-confirm-btn"><i class="ti ti-trash" style="font-size:15px;"></i> Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">💍</div>
+      <div class="sidebar-logo-text">Invitara</div>
+    </div>
+    <div class="sidebar-profile">
+      <div class="profile-avatar" id="cust-avatar">👤</div>
+      <div style="min-width:0;">
+        <div class="profile-name"  id="cust-name">Memuat...</div>
+        <div class="profile-email" id="cust-email">—</div>
+        <div class="profile-badge badge-cust">CUSTOMER</div>
+      </div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Menu Utama</div>
+    <div class="nav-item active" data-menu="dashboard" onclick="switchMenu('dashboard')"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+    <div class="nav-item" data-menu="undangan" onclick="switchMenu('undangan')"><i class="ti ti-heart"></i> Undangan <span class="nav-badge" id="inv-count-badge">0</span></div>
+    <div class="nav-item" data-menu="filter-ig" onclick="switchMenu('filter-ig')"><i class="ti ti-camera"></i> Filter IG</div>
+    <div class="nav-item" data-menu="transaksi" onclick="switchMenu('transaksi')"><i class="ti ti-credit-card"></i> Upgrade Paket</div>
+    <div class="nav-item" data-menu="cs" onclick="switchMenu('cs')"><i class="ti ti-headset"></i> Bantuan</div>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="btn-logout" onclick="doLogout()"><i class="ti ti-logout" style="font-size:20px;"></i> Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-content">
+  <header class="main-header">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+    <div class="main-title" id="main-title">Dashboard</div>
+    <a href="index.html" class="hamburger" title="Beranda"><i class="ti ti-home" style="font-size:20px;"></i></a>
+  </header>
+
+  <div class="main-body">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="content-section active" id="sec-dashboard">
+      <div class="alert-banner" id="banner-gratis">
+        <i class="ti ti-sparkles"></i>
+        <div>
+          <h4>Anda menggunakan paket Gratis</h4>
+          <p>Undangan menampilkan watermark Invitara. Upgrade untuk tampilan profesional.</p>
+          <button class="alert-banner-btn" onclick="switchMenu('transaksi')">Upgrade Sekarang →</button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon rose"><i class="ti ti-users" style="font-size:18px;color:var(--rose);"></i></div><div class="stat-num" id="stat-tamu">0</div><div class="stat-label">Total Tamu</div></div>
+        <div class="stat-card"><div class="stat-icon gold"><i class="ti ti-check" style="font-size:18px;color:var(--gold);"></i></div><div class="stat-num" id="stat-hadir">0</div><div class="stat-label">Konfirmasi Hadir</div></div>
+        <div class="stat-card"><div class="stat-icon sage"><i class="ti ti-message" style="font-size:18px;color:var(--sage);"></i></div><div class="stat-num" id="stat-ucapan">0</div><div class="stat-label">Ucapan Masuk</div></div>
+        <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-eye" style="font-size:18px;color:#4A7FC1;"></i></div><div class="stat-num" id="stat-views">0</div><div class="stat-label">Kunjungan</div></div>
+      </div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;">Akses Cepat</div>
+      <div class="qa-grid">
+        <div class="qa-btn" onclick="switchMenu('undangan')"><i class="ti ti-heart"></i><span>Kelola Undangan</span></div>
+        <div class="qa-btn" onclick="switchMenu('transaksi')"><i class="ti ti-credit-card"></i><span>Upgrade Paket</span></div>
+        <div class="qa-btn" onclick="switchMenu('filter-ig')"><i class="ti ti-camera"></i><span>Filter Instagram</span></div>
+        <div class="qa-btn" onclick="switchMenu('cs')"><i class="ti ti-headset"></i><span>Bantuan</span></div>
+      </div>
+    </div>
+
+    <!-- ── UNDANGAN ── -->
+    <div class="content-section" id="sec-undangan">
+      <!-- VIEW LIST -->
+      <div id="view-list">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-size:15px;font-weight:600;">Undangan Saya</div>
+          <button class="btn btn-primary btn-sm" onclick="showKelola(null)"><i class="ti ti-plus" style="font-size:14px;"></i> Buat Baru</button>
+        </div>
+        <div id="inv-list-container"></div>
+        <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="showKelola(null)">
+          <i class="ti ti-plus" style="font-size:15px;"></i> Buat Undangan Baru
+        </button>
+      </div>
+      <!-- VIEW KELOLA -->
+      <div id="view-kelola" style="display:none;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <button class="hamburger" onclick="showListUndangan()" title="Kembali"><i class="ti ti-arrow-left"></i></button>
+          <div style="flex:1;">
+            <div style="font-size:15px;font-weight:600;" id="kelola-title">Kelola Undangan</div>
+            <div style="font-size:12px;color:var(--text-muted);" id="kelola-sub">—</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="previewUndangan(null)"><i class="ti ti-eye" style="font-size:14px;"></i> Preview</button>
+        </div>
+        <div class="kelola-header-info">
+          <div class="kelola-stat"><div class="kelola-stat-num" id="k-tamu">0</div><div class="kelola-stat-label">Tamu</div></div>
+          <div class="kelola-stat"><div class="kelola-stat-num" id="k-hadir">0</div><div class="kelola-stat-label">Hadir</div></div>
+          <div class="kelola-stat"><div class="kelola-stat-num" id="k-ucapan">0</div><div class="kelola-stat-label">Ucapan</div></div>
+          <div class="kelola-stat"><div class="kelola-stat-num" id="k-views">0</div><div class="kelola-stat-label">Views</div></div>
+        </div>
+        <div class="feature-section-label"><i class="ti ti-lock" style="font-size:13px;color:var(--rose);"></i> Wajib Diisi</div>
+        <div class="feature-grid wajib-grid" id="feature-grid-wajib"></div>
+        <div class="feature-section-label" style="margin-top:18px;">
+          <i class="ti ti-toggle-right" style="font-size:13px;color:var(--text-muted);"></i> Fitur Tambahan
+          <span style="font-size:10px;color:var(--text-muted);font-weight:400;margin-left:4px;">· aktifkan sesuai kebutuhan</span>
+        </div>
+        <div class="feature-grid" id="feature-grid-opsional"></div>
+        <div id="feature-detail" style="display:none;margin-top:16px;"></div>
+      </div>
+    </div>
+
+    <!-- ── FILTER IG ── -->
+    <div class="content-section" id="sec-filter-ig">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px;">Filter Instagram Story</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:18px;">Pilih template → isi nama & tanggal → download PNG 1080×1920</div>
+      <div style="background:var(--white);border-radius:var(--radius);padding:18px;border:1px solid var(--border);margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-photo" style="font-size:16px;color:var(--rose);"></i> 1. Pilih Template</div>
+        <div class="template-grid-ig" id="ig-template-grid"></div>
+      </div>
+      <div style="background:var(--white);border-radius:var(--radius);padding:18px;border:1px solid var(--border);margin-bottom:14px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;"><i class="ti ti-pencil" style="font-size:16px;color:var(--rose);"></i> 2. Isi Data</div>
+        <div class="form-group"><label class="form-label">Nama Mempelai</label><input type="text" class="form-input" id="ig-nama" placeholder="Rizky & Anisa" oninput="igRender()"></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Tanggal</label><input type="date" class="form-input" id="ig-tanggal" oninput="igRender()"></div>
+          <div class="form-group"><label class="form-label">Font</label>
+            <select class="form-input" id="ig-font" onchange="igRender()">
+              <option value="Great Vibes">Great Vibes (kursif)</option>
+              <option value="Playfair Display">Playfair Display</option>
+              <option value="Plus Jakarta Sans">Jakarta Sans</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Warna Teks</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;" id="ig-warna-picker">
+            <div class="warna-dot active" data-w="#4A3728" style="background:#4A3728;"></div>
+            <div class="warna-dot" data-w="#8B4F56" style="background:#8B4F56;"></div>
+            <div class="warna-dot" data-w="#2D4A6B" style="background:#2D4A6B;"></div>
+            <div class="warna-dot" data-w="#2D6A4F" style="background:#2D6A4F;"></div>
+            <div class="warna-dot" data-w="#7A5C2E" style="background:#7A5C2E;"></div>
+            <div class="warna-dot" data-w="#6B3A2A" style="background:#6B3A2A;"></div>
+            <div class="warna-dot" data-w="#FFFFFF" style="background:#FFFFFF;border:1.5px solid #ccc;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--white);border-radius:var(--radius);padding:18px;border:1px solid var(--border);">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;"><i class="ti ti-download" style="font-size:16px;color:var(--rose);"></i> 3. Preview & Download</div>
+        <div class="preview-wrap">
+          <div class="preview-label">Preview 1080×1920px (Instagram Story)</div>
+          <canvas id="ig-canvas" width="1080" height="1920" style="max-width:100%;max-height:500px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.1);"></canvas>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-outline" style="flex:1;" onclick="igRender()"><i class="ti ti-refresh" style="font-size:16px;"></i> Refresh</button>
+          <button class="btn btn-success" style="flex:2;justify-content:center;padding:12px;" onclick="igDownload()"><i class="ti ti-download" style="font-size:18px;"></i> Download PNG</button>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;">Format PNG · 1080×1920px · Instagram Story</div>
+      </div>
+    </div>
+
+    <!-- ── TRANSAKSI ── -->
+    <div class="content-section" id="sec-transaksi">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px;">Upgrade Paket</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:18px;">Pilih paket untuk undangan lebih profesional</div>
+      <div class="paket-card" id="paket-gratis" onclick="selectPaket('gratis')">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div class="paket-name">Gratis</div><div class="paket-price free">Rp 0</div></div>
+        <ul class="paket-features"><li><i class="ti ti-check"></i><span>Fitur dasar + RSVP</span></li><li class="cross"><i class="ti ti-x"></i><span>Watermark di tengah</span></li></ul>
+      </div>
+      <div class="paket-card featured-paket" id="paket-standar" onclick="selectPaket('standar')">
+        <div class="paket-top-badge">⭐ Terpopuler</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div class="paket-name">Standar</div><div class="paket-price">Rp 69.000</div></div>
+        <ul class="paket-features"><li><i class="ti ti-check"></i><span>Tanpa watermark</span></li><li><i class="ti ti-check"></i><span>Musik latar (50+ lagu)</span></li><li><i class="ti ti-check"></i><span>Galeri foto maks 30 · Filter IG</span></li></ul>
+      </div>
+      <div class="paket-card" id="paket-premium" onclick="selectPaket('premium')">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div class="paket-name">Premium</div><div class="paket-price">Rp 120.000</div></div>
+        <ul class="paket-features"><li><i class="ti ti-check"></i><span>Semua fitur Standar</span></li><li><i class="ti ti-check"></i><span>Live streaming · Kado digital</span></li><li><i class="ti ti-check"></i><span>Galeri tak terbatas</span></li></ul>
+      </div>
+      <div class="payment-box" id="payment-box" style="display:none;">
+        <h4>Ringkasan Pembayaran</h4>
+        <div class="pay-row"><span>Paket</span><span id="pay-nama-paket">—</span></div>
+        <div class="pay-total"><span>Total</span><span id="pay-total">—</span></div>
+        <button class="btn-pay" onclick="doPayment()"><i class="ti ti-credit-card" style="font-size:20px;"></i> Bayar via Midtrans</button>
+        <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--text-muted);">GoPay · OVO · Dana · VA Bank · Kartu Kredit</div>
+      </div>
+      <div style="margin-top:20px;">
+        <div style="font-size:14px;font-weight:600;margin-bottom:12px;">Riwayat Transaksi</div>
+        <div id="riwayat-transaksi"></div>
+      </div>
+    </div>
+
+    <!-- ── BANTUAN / CS ── -->
+    <div class="content-section" id="sec-cs">
+      <div style="font-size:15px;font-weight:600;margin-bottom:4px;">Customer Service</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Kami siap membantu Anda</div>
+      <div class="cs-card">
+        <div class="cs-icon wa"><i class="ti ti-brand-whatsapp" style="font-size:24px;color:#25D366;"></i></div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:4px;">WhatsApp</div>
+        <div style="font-size:13px;color:var(--text-muted);">Senin–Sabtu · 08.00–20.00 WIB</div>
+        <div style="font-size:17px;font-weight:600;margin-top:8px;">+62 812-3456-7890</div>
+        <button class="btn-cs btn-wa" onclick="window.open('https://wa.me/628123456789?text=Halo+Invitara,+saya+butuh+bantuan.','_blank')">
+          <i class="ti ti-brand-whatsapp" style="font-size:18px;"></i> Chat WhatsApp
+        </button>
+      </div>
+      <div class="cs-card">
+        <div class="cs-icon em"><i class="ti ti-mail" style="font-size:24px;color:#4A7FC1;"></i></div>
+        <div style="font-size:15px;font-weight:600;margin-bottom:4px;">Email</div>
+        <div style="font-size:13px;color:var(--text-muted);">Respons dalam 1×24 jam kerja</div>
+        <div style="font-size:17px;font-weight:600;margin-top:8px;">support@invitara.id</div>
+        <button class="btn-cs btn-email" onclick="window.open('mailto:support@invitara.id','_blank')">
+          <i class="ti ti-mail" style="font-size:18px;"></i> Kirim Email
+        </button>
+      </div>
+    </div>
+
+  </div><!-- end main-body -->
+</div><!-- end main-content -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/customer.js"></script>
 </body>
 </html>

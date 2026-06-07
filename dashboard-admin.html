@@ -1,14 +1,255 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invitara</title>
-<!-- CSS & JS akan diisi -->
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Invitara</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='52' font-size='52'>💍</text></svg>">
+<link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-<p style="font-family:sans-serif;text-align:center;padding:40px;color:#888;">
-  File: dashboard-admin.html — akan diisi konten lengkap
-</p>
+<body style="display:flex;">
+<div id="spinner"><div class="spinner"></div></div>
+<div id="toast"></div>
+
+<!-- Modal Hapus -->
+<div class="modal-backdrop" id="modal-hapus">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Konfirmasi Hapus</div><button class="modal-close" onclick="closeModal('modal-hapus')"><i class="ti ti-x" style="font-size:16px;"></i></button></div>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;" id="hapus-text">Yakin?</p>
+    <div style="display:flex;gap:10px;"><button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-hapus')">Batal</button><button class="btn btn-danger" style="flex:1;justify-content:center;" id="hapus-confirm-btn"><i class="ti ti-trash"></i> Hapus</button></div>
+  </div>
+</div>
+
+<!-- Modal Musik -->
+<div class="modal-backdrop" id="modal-musik">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="m-modal-title">Tambah Lagu</div><button class="modal-close" onclick="closeModal('modal-musik')"><i class="ti ti-x" style="font-size:16px;"></i></button></div>
+    <input type="hidden" id="m-id">
+    <div class="form-group"><label class="form-label">Judul</label><input class="form-input" id="m-judul" placeholder="Canon in D"></div>
+    <div class="form-group"><label class="form-label">Artis</label><input class="form-input" id="m-artis" placeholder="Pachelbel"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Kategori</label><select class="form-input" id="m-kat"><option>Instrumental</option><option>Jazz</option><option>Pop Romantis</option><option>Pop Indonesia</option><option>R&B</option><option>Country</option><option>Islami</option><option>Tradisional</option></select></div>
+      <div class="form-group"><label class="form-label">Paket Min</label><select class="form-input" id="m-paket"><option value="gratis">Gratis</option><option value="standar">Standar</option><option value="premium">Premium</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Sumber</label><select class="form-input" id="m-source"><option value="soundcloud">SoundCloud</option><option value="youtube">YouTube</option><option value="gdrive">Google Drive</option><option value="url_lain">URL Lain</option></select></div>
+    <div class="form-group"><label class="form-label">URL Lagu</label><input class="form-input" id="m-url" type="url" placeholder="https://soundcloud.com/..."></div>
+    <div style="display:flex;gap:10px;"><button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-musik')">Batal</button><button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="saveMusikAdmin()"><i class="ti ti-device-floppy" style="font-size:15px;"></i> Simpan</button></div>
+  </div>
+</div>
+
+<!-- Modal Tema -->
+<div class="modal-backdrop" id="modal-tema">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><div class="modal-title" id="t-modal-title">Tambah Tema</div><button class="modal-close" onclick="closeModal('modal-tema')"><i class="ti ti-x" style="font-size:16px;"></i></button></div>
+    <input type="hidden" id="t-id">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Nama Tema</label><input class="form-input" id="t-nama" placeholder="Sakura Garden"></div>
+      <div class="form-group"><label class="form-label">Kategori</label><select class="form-input" id="t-kat"><option>Modern</option><option>Floral</option><option>Adat</option><option>Islami</option><option>Outdoor</option><option>Minimalis</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Konsep / Deskripsi</label><input class="form-input" id="t-konsep" placeholder="Bunga sakura merah muda..."></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Paket Min</label><select class="form-input" id="t-paket"><option value="gratis">Gratis</option><option value="standar">Standar</option><option value="premium">Premium</option></select></div>
+      <div class="form-group"><label class="form-label">Urutan</label><input type="number" class="form-input" id="t-urutan" value="1" min="1"></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px;letter-spacing:.04em;">WARNA</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Primer</label><input type="color" class="form-input" id="t-wp" value="#C97B84" style="padding:4px;height:44px;"></div>
+      <div class="form-group"><label class="form-label">Sekunder</label><input type="color" class="form-input" id="t-ws" value="#C9A96E" style="padding:4px;height:44px;"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Background</label><input type="color" class="form-input" id="t-wb" value="#FAF7F2" style="padding:4px;height:44px;"></div>
+      <div class="form-group"><label class="form-label">Teks</label><input type="color" class="form-input" id="t-wt" value="#2C2420" style="padding:4px;height:44px;"></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px;letter-spacing:.04em;">FONT</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Judul</label><select class="form-input" id="t-fj"><option>Playfair Display</option><option>Great Vibes</option><option>Cormorant Garamond</option></select></div>
+      <div class="form-group"><label class="form-label">Body</label><select class="form-input" id="t-fb"><option>Plus Jakarta Sans</option><option>Lato</option><option>Poppins</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">URL Thumbnail</label><input type="url" class="form-input" id="t-thumbnail" placeholder="https://...supabase.co/..."></div>
+    <div class="form-group"><label class="form-label">URL Preview</label><input type="url" class="form-input" id="t-preview" placeholder="https://...supabase.co/..."></div>
+    <div class="form-group"><label class="form-label">File Template (di folder templates/)</label><input class="form-input" id="t-template" placeholder="sakura.html"></div>
+    <div style="display:flex;gap:10px;"><button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-tema')">Batal</button><button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="saveTemaAdmin()"><i class="ti ti-device-floppy" style="font-size:15px;"></i> Simpan</button></div>
+  </div>
+</div>
+
+<!-- Modal Filter IG -->
+<div class="modal-backdrop" id="modal-filter-ig">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="f-modal-title">Tambah Filter IG</div><button class="modal-close" onclick="closeModal('modal-filter-ig')"><i class="ti ti-x" style="font-size:16px;"></i></button></div>
+    <input type="hidden" id="f-id">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Nama Template</label><input class="form-input" id="f-nama" placeholder="Sakura Story"></div>
+      <div class="form-group"><label class="form-label">Kategori</label><select class="form-input" id="f-kat"><option>Floral</option><option>Modern</option><option>Adat</option><option>Islami</option><option>Minimalis</option><option>Outdoor</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Paket Min</label><select class="form-input" id="f-paket"><option value="gratis">Gratis</option><option value="standar">Standar</option><option value="premium">Premium</option></select></div>
+      <div class="form-group"><label class="form-label">Urutan</label><input type="number" class="form-input" id="f-urutan" value="1" min="1"></div>
+    </div>
+    <div class="form-group"><label class="form-label">URL Template PNG (1080×1920)</label><input type="url" class="form-input" id="f-tpl-url" placeholder="https://...supabase.co/.../frame.svg"></div>
+    <div class="form-group"><label class="form-label">URL Thumbnail</label><input type="url" class="form-input" id="f-thumb-url" placeholder="https://..."></div>
+    <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:10px;letter-spacing:.04em;">POSISI TEKS DI CANVAS (px dari 1080×1920)</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Nama — Posisi Y</label><input type="number" class="form-input" id="f-ny" value="1550"></div>
+      <div class="form-group"><label class="form-label">Nama — Font Size</label><input type="number" class="form-input" id="f-ns" value="80"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tanggal — Posisi Y</label><input type="number" class="form-input" id="f-ty" value="1660"></div>
+      <div class="form-group"><label class="form-label">Tanggal — Font Size</label><input type="number" class="form-input" id="f-ts" value="42"></div>
+    </div>
+    <div style="display:flex;gap:10px;"><button class="btn btn-outline" style="flex:1;" onclick="closeModal('modal-filter-ig')">Batal</button><button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="saveFilterIGAdmin()"><i class="ti ti-device-floppy" style="font-size:15px;"></i> Simpan</button></div>
+  </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR ADMIN -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-logo"><div class="sidebar-logo-icon">💍</div><div class="sidebar-logo-text">Invitara</div></div>
+    <div class="sidebar-profile">
+      <div class="profile-avatar">👨‍💼</div>
+      <div style="min-width:0;"><div class="profile-name" id="admin-name">Admin</div><div class="profile-email" id="admin-email">—</div><div class="profile-badge badge-admin">ADMIN</div></div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Panel Admin</div>
+    <div class="nav-item active" data-menu="dashboard"  onclick="switchMenu('dashboard')"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
+    <div class="nav-item" data-menu="customers"          onclick="switchMenu('customers')"><i class="ti ti-users"></i> Customers <span class="nav-badge" id="admin-cust-count">0</span></div>
+    <div class="nav-item" data-menu="undangan"           onclick="switchMenu('undangan')"><i class="ti ti-heart"></i> Semua Undangan</div>
+    <div class="nav-item" data-menu="transaksi"          onclick="switchMenu('transaksi')"><i class="ti ti-credit-card"></i> Transaksi</div>
+    <div class="nav-section">Konten</div>
+    <div class="nav-item" data-menu="musik"              onclick="switchMenu('musik')"><i class="ti ti-music"></i> Musik</div>
+    <div class="nav-item" data-menu="tema"               onclick="switchMenu('tema')"><i class="ti ti-palette"></i> Tema</div>
+    <div class="nav-item" data-menu="filter-ig"          onclick="switchMenu('filter-ig')"><i class="ti ti-camera"></i> Filter IG</div>
+    <div class="nav-section">Sistem</div>
+    <div class="nav-item" data-menu="pengaturan"         onclick="switchMenu('pengaturan')"><i class="ti ti-settings"></i> Pengaturan</div>
+  </nav>
+  <div class="sidebar-bottom"><button class="btn-logout" onclick="doLogout()"><i class="ti ti-logout" style="font-size:20px;"></i> Logout</button></div>
+</aside>
+
+<!-- MAIN ADMIN -->
+<div class="main-content">
+  <header class="main-header">
+    <button class="hamburger" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+    <div class="main-title" id="main-title">Dashboard Admin</div>
+    <a href="index.html" class="hamburger" title="Beranda"><i class="ti ti-home" style="font-size:20px;"></i></a>
+  </header>
+  <div class="main-body">
+
+    <!-- DASHBOARD -->
+    <div class="content-section active" id="sec-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon rose"><i class="ti ti-users" style="font-size:18px;color:var(--rose);"></i></div><div class="stat-num" id="a-stat-cust">0</div><div class="stat-label">Total Customer</div></div>
+        <div class="stat-card"><div class="stat-icon gold"><i class="ti ti-heart" style="font-size:18px;color:var(--gold);"></i></div><div class="stat-num" id="a-stat-inv">0</div><div class="stat-label">Total Undangan</div></div>
+        <div class="stat-card"><div class="stat-icon sage"><i class="ti ti-cash" style="font-size:18px;color:var(--sage);"></i></div><div class="stat-num" id="a-stat-rev">Rp 0</div><div class="stat-label">Total Pendapatan</div></div>
+        <div class="stat-card"><div class="stat-icon blue"><i class="ti ti-receipt" style="font-size:18px;color:#4A7FC1;"></i></div><div class="stat-num" id="a-stat-trx">0</div><div class="stat-label">Transaksi Sukses</div></div>
+      </div>
+      <div class="content-card" style="margin-bottom:14px;">
+        <h3><i class="ti ti-chart-pie" style="font-size:16px;color:var(--rose);"></i> Distribusi Paket</h3>
+        <div style="display:flex;gap:10px;">
+          <div style="flex:1;text-align:center;background:var(--rose-light);border-radius:10px;padding:14px;"><div style="font-size:22px;font-weight:700;color:var(--rose);" id="a-dist-g">0</div><div style="font-size:11px;color:var(--rose-dark);">Gratis</div></div>
+          <div style="flex:1;text-align:center;background:var(--gold-light);border-radius:10px;padding:14px;"><div style="font-size:22px;font-weight:700;color:var(--gold-dark);" id="a-dist-s">0</div><div style="font-size:11px;color:var(--gold-dark);">Standar</div></div>
+          <div style="flex:1;text-align:center;background:var(--sage-light);border-radius:10px;padding:14px;"><div style="font-size:22px;font-weight:700;color:var(--sage);" id="a-dist-p">0</div><div style="font-size:11px;color:var(--sage);">Premium</div></div>
+        </div>
+      </div>
+      <div class="admin-table-wrap"><div class="admin-table-header"><h3>Transaksi Terbaru</h3></div>
+        <table class="admin-table"><thead><tr><th>Customer</th><th>Paket</th><th>Nominal</th><th>Status</th></tr></thead><tbody id="a-recent-trx"><tr><td colspan="4" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div class="content-section" id="sec-customers">
+      <div class="admin-table-wrap">
+        <div class="admin-table-header"><h3>Daftar Customer</h3><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari..." oninput="filterTable('a-tbl-cust',this.value)"></div></div>
+        <table class="admin-table" id="a-tbl-cust"><thead><tr><th>Nama</th><th>Email</th><th>Undangan</th><th>Aksi</th></tr></thead><tbody id="a-tb-cust"><tr><td colspan="4" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- SEMUA UNDANGAN -->
+    <div class="content-section" id="sec-undangan">
+      <div class="admin-table-wrap">
+        <div class="admin-table-header"><h3>Semua Undangan</h3><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari..." oninput="filterTable('a-tbl-inv',this.value)"></div></div>
+        <table class="admin-table" id="a-tbl-inv"><thead><tr><th>Slug / Customer</th><th>Paket</th><th>Views</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="a-tb-inv"><tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- TRANSAKSI -->
+    <div class="content-section" id="sec-transaksi">
+      <div class="admin-table-wrap">
+        <div class="admin-table-header"><h3>Semua Transaksi</h3><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari..." oninput="filterTable('a-tbl-trx',this.value)"></div></div>
+        <table class="admin-table" id="a-tbl-trx"><thead><tr><th>Customer</th><th>Paket</th><th>Nominal</th><th>Status</th><th>Tanggal</th></tr></thead><tbody id="a-tb-trx"><tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- MUSIK -->
+    <div class="content-section" id="sec-musik">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div><div style="font-size:15px;font-weight:600;">Kelola Musik</div><div style="font-size:12px;color:var(--text-muted);">Customer memilih dari daftar ini</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openMusikModal(null)"><i class="ti ti-plus" style="font-size:14px;"></i> Tambah Lagu</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="kat-btn-admin active" onclick="filterMusikKat('semua',this)">Semua</button>
+        <button class="kat-btn-admin" onclick="filterMusikKat('Instrumental',this)">Instrumental</button>
+        <button class="kat-btn-admin" onclick="filterMusikKat('Jazz',this)">Jazz</button>
+        <button class="kat-btn-admin" onclick="filterMusikKat('Pop Romantis',this)">Pop Romantis</button>
+        <button class="kat-btn-admin" onclick="filterMusikKat('Pop Indonesia',this)">Pop Indonesia</button>
+        <button class="kat-btn-admin" onclick="filterMusikKat('R&B',this)">R&B</button>
+        <button class="kat-btn-admin" onclick="filterMusikKat('Islami',this)">Islami</button>
+      </div>
+      <div class="admin-table-wrap">
+        <div class="admin-table-header"><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari judul / artis..." oninput="filterTable('a-tbl-musik',this.value)"></div><div style="font-size:12px;color:var(--text-muted);" id="musik-count-label">0 lagu</div></div>
+        <table class="admin-table" id="a-tbl-musik"><thead><tr><th>Judul</th><th>Artis</th><th>Kategori</th><th>Paket</th><th>Aktif</th><th>Aksi</th></tr></thead><tbody id="a-tb-musik"><tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- TEMA -->
+    <div class="content-section" id="sec-tema">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div><div style="font-size:15px;font-weight:600;">Kelola Tema</div><div style="font-size:12px;color:var(--text-muted);">Tiap tema punya bundle aset ornamen & background</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openTemaModal(null)"><i class="ti ti-plus" style="font-size:14px;"></i> Tambah Tema</button>
+      </div>
+      <div id="a-tema-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"><div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">Memuat...</div></div>
+    </div>
+
+    <!-- FILTER IG -->
+    <div class="content-section" id="sec-filter-ig">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div><div style="font-size:15px;font-weight:600;">Kelola Filter IG</div><div style="font-size:12px;color:var(--text-muted);">Template bingkai story 1080×1920 untuk customer</div></div>
+        <button class="btn btn-primary btn-sm" onclick="openFilterModal(null)"><i class="ti ti-plus" style="font-size:14px;"></i> Tambah Template</button>
+      </div>
+      <div id="a-filter-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"><div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">Memuat...</div></div>
+    </div>
+
+    <!-- PENGATURAN -->
+    <div class="content-section" id="sec-pengaturan">
+      <div style="font-size:15px;font-weight:600;margin-bottom:16px;">Pengaturan Sistem</div>
+      <div class="content-card"><h3><i class="ti ti-settings" style="font-size:16px;color:var(--rose);"></i> Umum</h3>
+        <div class="form-group"><label class="form-label">Nama Aplikasi</label><input class="form-input" id="set-appname" value="Invitara"></div>
+        <div class="form-group"><label class="form-label">URL Aplikasi</label><input class="form-input" id="set-appurl" placeholder="https://invitara.id"></div>
+      </div>
+      <div class="content-card"><h3><i class="ti ti-headset" style="font-size:16px;color:var(--rose);"></i> Customer Service</h3>
+        <div class="form-group"><label class="form-label">Nomor WhatsApp CS</label><input class="form-input" id="set-wa" value="628123456789"></div>
+        <div class="form-group"><label class="form-label">Email CS</label><input class="form-input" id="set-email" value="support@invitara.id"></div>
+        <div class="form-group"><label class="form-label">Jam Operasional</label><input class="form-input" id="set-jam" value="Senin–Sabtu, 08.00–20.00 WIB"></div>
+      </div>
+      <div class="content-card"><h3><i class="ti ti-tag" style="font-size:16px;color:var(--rose);"></i> Harga Paket (Rp)</h3>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Standar</label><input type="number" class="form-input" id="set-standar" value="69000"></div>
+          <div class="form-group"><label class="form-label">Premium</label><input type="number" class="form-input" id="set-premium" value="120000"></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;"><button class="btn btn-primary" onclick="savePengaturan()"><i class="ti ti-device-floppy" style="font-size:16px;"></i> Simpan Pengaturan</button></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/admin.js"></script>
 </body>
 </html>
