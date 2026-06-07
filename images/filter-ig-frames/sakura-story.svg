@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" fill="none">
+  <!-- Sakura Story Frame — area tengah kosong untuk foto tamu -->
+  <!-- Border luar -->
+  <rect x="0" y="0" width="1080" height="1920" fill="#FFF0F5" opacity="0.95"/>
+  <!-- Ornamen sudut kiri atas -->
+  <g transform="translate(0,0)">
+    <circle cx="80" cy="80" r="40" fill="#E8889A" opacity="0.3"/>
+    <circle cx="150" cy="50" r="25" fill="#F5C5CE" opacity="0.5"/>
+    <circle cx="50" cy="150" r="25" fill="#F5C5CE" opacity="0.5"/>
+    <circle cx="200" cy="100" r="15" fill="#E8889A" opacity="0.4"/>
+    <circle cx="100" cy="200" r="15" fill="#E8889A" opacity="0.4"/>
+    <!-- Kelopak bunga -->
+    <ellipse cx="120" cy="70" rx="30" ry="15" fill="#F5C5CE" opacity="0.6" transform="rotate(-30 120 70)"/>
+    <ellipse cx="70" cy="120" rx="30" ry="15" fill="#F5C5CE" opacity="0.6" transform="rotate(60 70 120)"/>
+    <ellipse cx="160" cy="160" rx="20" ry="10" fill="#E8889A" opacity="0.4" transform="rotate(45 160 160)"/>
+    <circle cx="120" cy="100" r="8" fill="#C97B84" opacity="0.7"/>
+  </g>
+  <!-- Ornamen sudut kanan atas (mirror) -->
+  <g transform="translate(1080,0) scale(-1,1)">
+    <circle cx="80" cy="80" r="40" fill="#E8889A" opacity="0.3"/>
+    <circle cx="150" cy="50" r="25" fill="#F5C5CE" opacity="0.5"/>
+    <circle cx="50" cy="150" r="25" fill="#F5C5CE" opacity="0.5"/>
+    <ellipse cx="120" cy="70" rx="30" ry="15" fill="#F5C5CE" opacity="0.6" transform="rotate(-30 120 70)"/>
+    <ellipse cx="70" cy="120" rx="30" ry="15" fill="#F5C5CE" opacity="0.6" transform="rotate(60 70 120)"/>
+    <circle cx="120" cy="100" r="8" fill="#C97B84" opacity="0.7"/>
+  </g>
+  <!-- Ornamen sudut kiri bawah -->
+  <g transform="translate(0,1920) scale(1,-1)">
+    <circle cx="80" cy="80" r="40" fill="#E8889A" opacity="0.3"/>
+    <circle cx="150" cy="50" r="25" fill="#F5C5CE" opacity="0.5"/>
+    <circle cx="50" cy="150" r="25" fill="#F5C5CE" opacity="0.5"/>
+    <ellipse cx="120" cy="70" rx="30" ry="15" fill="#F5C5CE" opacity="0.6" transform="rotate(-30 120 70)"/>
+    <ellipse cx="70" cy="120" rx="30" ry="15" fill="#F5C5CE" opacity="0.6" transform="rotate(60 70 120)"/>
+    <circle cx="120" cy="100" r="8" fill="#C97B84" opacity="0.7"/>
+  </g>
+  <!-- Ornamen sudut kanan bawah -->
+  <g transform="translate(1080,1920) scale(-1,-1)">
+    <circle cx="80" cy="80" r="40" fill="#E8889A" opacity="0.3"/>
+    <circle cx="150" cy="50" r="25" fill="#F5C5CE" opacity="0.5"/>
+    <circle cx="50" cy="150" r="25" fill="#F5C5CE" opacity="0.5"/>
+    <ellipse cx="120" cy="70" rx="30" ry="15" fill="#F5C5CE" opacity="0.6" transform="rotate(-30 120 70)"/>
+    <circle cx="120" cy="100" r="8" fill="#C97B84" opacity="0.7"/>
+  </g>
+  <!-- Garis dekoratif atas -->
+  <line x1="80" y1="320" x2="420" y2="320" stroke="#E8889A" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="540" cy="320" r="6" fill="#E8889A" opacity="0.7"/>
+  <line x1="660" y1="320" x2="1000" y2="320" stroke="#E8889A" stroke-width="1.5" opacity="0.5"/>
+  <!-- Area foto tengah — KOSONG (tamu overlay foto di sini) -->
+  <!-- Garis dekoratif bawah area nama -->
+  <line x1="80" y1="1480" x2="420" y2="1480" stroke="#E8889A" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="540" cy="1480" r="6" fill="#E8889A" opacity="0.7"/>
+  <line x1="660" y1="1480" x2="1000" y2="1480" stroke="#E8889A" stroke-width="1.5" opacity="0.5"/>
+  <!-- Label teks "Turut mengucapkan selamat" -->
+  <text x="540" y="290" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="36" fill="#E8889A" opacity="0.7">Turut mengucapkan selamat kepada</text>
+  <!-- Nama & tanggal akan dirender oleh Canvas JS di posisi: nama y=1550, tanggal y=1660 -->
+  <!-- Watermark kecil -->
+  <text x="540" y="1880" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="28" fill="#E8889A" opacity="0.3">invitara.id</text>
+</svg>

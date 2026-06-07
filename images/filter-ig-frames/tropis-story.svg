@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" fill="none">
+  <rect width="1080" height="1920" fill="#F5FBF5" opacity="0.97"/>
+  <!-- Daun kiri atas -->
+  <g opacity="0.25" transform="translate(-20,-20)">
+    <path d="M0 300 Q80 100 200 0 Q180 150 150 300Z" fill="#4A7A4A"/>
+    <path d="M0 300 L200 0" stroke="#4A7A4A" stroke-width="2"/>
+    <path d="M40 260 Q100 150 180 60" stroke="#4A7A4A" stroke-width="1" opacity="0.6"/>
+    <path d="M80 220 Q130 140 190 80" stroke="#4A7A4A" stroke-width="1" opacity="0.4"/>
+  </g>
+  <!-- Daun kanan atas (mirror) -->
+  <g opacity="0.25" transform="translate(1100,-20) scale(-1,1)">
+    <path d="M0 300 Q80 100 200 0 Q180 150 150 300Z" fill="#4A7A4A"/>
+    <path d="M0 300 L200 0" stroke="#4A7A4A" stroke-width="2"/>
+    <path d="M40 260 Q100 150 180 60" stroke="#4A7A4A" stroke-width="1" opacity="0.6"/>
+  </g>
+  <!-- Daun kiri bawah -->
+  <g opacity="0.25" transform="translate(-20,1940) scale(1,-1)">
+    <path d="M0 300 Q80 100 200 0 Q180 150 150 300Z" fill="#4A7A4A"/>
+    <path d="M0 300 L200 0" stroke="#4A7A4A" stroke-width="2"/>
+  </g>
+  <!-- Daun kanan bawah -->
+  <g opacity="0.25" transform="translate(1100,1940) scale(-1,-1)">
+    <path d="M0 300 Q80 100 200 0 Q180 150 150 300Z" fill="#4A7A4A"/>
+    <path d="M0 300 L200 0" stroke="#4A7A4A" stroke-width="2"/>
+  </g>
+  <rect x="25" y="25" width="1030" height="1870" stroke="#4A7A4A" stroke-width="1.5" fill="none" opacity="0.2"/>
+  <line x1="80" y1="340" x2="430" y2="340" stroke="#4A7A4A" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="540" cy="340" r="7" fill="#7A9E7E" opacity="0.5"/>
+  <line x1="650" y1="340" x2="1000" y2="340" stroke="#4A7A4A" stroke-width="1.5" opacity="0.4"/>
+  <text x="540" y="313" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="34" fill="#4A7A4A" opacity="0.6">Turut mengucapkan selamat kepada</text>
+  <line x1="80" y1="1490" x2="430" y2="1490" stroke="#4A7A4A" stroke-width="1.5" opacity="0.4"/>
+  <circle cx="540" cy="1490" r="7" fill="#7A9E7E" opacity="0.5"/>
+  <line x1="650" y1="1490" x2="1000" y2="1490" stroke="#4A7A4A" stroke-width="1.5" opacity="0.4"/>
+  <text x="540" y="1885" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="28" fill="#4A7A4A" opacity="0.25">invitara.id</text>
+</svg>

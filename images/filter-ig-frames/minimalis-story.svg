@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" fill="none">
+  <rect width="1080" height="1920" fill="#FAFAFA"/>
+  <rect x="30" y="30" width="1020" height="1860" stroke="#888" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <rect x="50" y="50" width="980" height="1820" stroke="#888" stroke-width="0.5" fill="none" opacity="0.2"/>
+  <!-- Sudut minimalis -->
+  <line x1="30" y1="30" x2="130" y2="30" stroke="#444" stroke-width="2" opacity="0.6"/>
+  <line x1="30" y1="30" x2="30" y2="130" stroke="#444" stroke-width="2" opacity="0.6"/>
+  <line x1="950" y1="30" x2="1050" y2="30" stroke="#444" stroke-width="2" opacity="0.6"/>
+  <line x1="1050" y1="30" x2="1050" y2="130" stroke="#444" stroke-width="2" opacity="0.6"/>
+  <line x1="30" y1="1790" x2="30" y2="1890" stroke="#444" stroke-width="2" opacity="0.6"/>
+  <line x1="30" y1="1890" x2="130" y2="1890" stroke="#444" stroke-width="2" opacity="0.6"/>
+  <line x1="1050" y1="1790" x2="1050" y2="1890" stroke="#444" stroke-width="2" opacity="0.6"/>
+  <line x1="950" y1="1890" x2="1050" y2="1890" stroke="#444" stroke-width="2" opacity="0.6"/>
+  <!-- Divider tipis -->
+  <line x1="100" y1="330" x2="470" y2="330" stroke="#888" stroke-width="1" opacity="0.4"/>
+  <line x1="530" y1="330" x2="980" y2="330" stroke="#888" stroke-width="1" opacity="0.4"/>
+  <rect x="490" y="323" width="20" height="14" fill="#888" opacity="0.3"/>
+  <text x="540" y="308" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="32" fill="#666" opacity="0.6">Turut mengucapkan selamat kepada</text>
+  <line x1="100" y1="1490" x2="470" y2="1490" stroke="#888" stroke-width="1" opacity="0.4"/>
+  <line x1="530" y1="1490" x2="980" y2="1490" stroke="#888" stroke-width="1" opacity="0.4"/>
+  <rect x="490" y="1483" width="20" height="14" fill="#888" opacity="0.3"/>
+  <text x="540" y="1885" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="26" fill="#888" opacity="0.3">invitara.id</text>
+</svg>

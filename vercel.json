@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    { "source": "/auth",       "destination": "/auth.html" },
+    { "source": "/dashboard",  "destination": "/dashboard-customer.html" },
+    { "source": "/admin",      "destination": "/dashboard-admin.html" },
+    { "source": "/filter-ig",  "destination": "/filter-ig.html" },
+    {
+      "source": "/:slug((?!index|auth|dashboard|dashboard-admin|dashboard-customer|filter-ig|templates|images|css|js|vercel).*)",
+      "destination": "/undangan.html"
+    }
+  ]
+}
