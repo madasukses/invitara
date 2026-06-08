@@ -448,7 +448,7 @@ async function uploadFoto(input, pihak) {
   toast('Foto diupload!')
 }
 
-
+async function loadTemaOptions() {
   const { data: temas } = await sb.from('tema').select('*').eq('aktif',true).order('urutan')
   const el = document.getElementById('tema-options')
   if (!el) return
