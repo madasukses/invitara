@@ -59,7 +59,24 @@ function formatDateTime(str) {
 async function requireAuth(role = null) {
   const session = await getSession()
   if (!session) { window.location.href = 'auth.html'; return null }
-  const profile = await getProfile(session.user.id)
+  let profile = await getProfile(session.user.id)
+  // kalau profile null (trigger belum jalan) atau nama kosong, coba upsert
+  if (!profile) {
+    const meta = session.user.user_metadata
+    await sb.from('profiles').upsert({
+      id: session.user.id,
+      email: session.user.email,
+      nama: meta?.full_name || meta?.name || session.user.email.split('@')[0],
+      role: 'customer'
+    }, { onConflict: 'id' })
+    profile = await getProfile(session.user.id)
+  }
+  if (!profile.nama) {
+    const meta = session.user.user_metadata
+    const nama = meta?.full_name || meta?.name || session.user.email.split('@')[0]
+    await sb.from('profiles').update({ nama }).eq('id', session.user.id)
+    profile.nama = nama
+  }
   if (role && profile?.role !== role) {
     window.location.href = profile?.role === 'admin' ? 'dashboard-admin.html' : 'dashboard-customer.html'
     return null

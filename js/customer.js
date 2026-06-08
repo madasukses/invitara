@@ -109,18 +109,36 @@ async function loadInvitations() {
     const nama   = (pria!=='—'&&wanita!=='—') ? `${pria} & ${wanita}` : inv.slug||'Undangan Baru'
     const paket  = inv.paket || 'gratis'
     const temaBg = inv.tema ? `background:linear-gradient(135deg,${inv.tema.warna_primer||'#C97B84'},${inv.tema.warna_sekunder||'#C9A96E'})` : ''
-    return `<div class="inv-card">
+    const wmAktif = inv.show_watermark !== false && paket === 'gratis'
+    return `<div class="inv-card" id="invcard-${inv.id}">
       <div class="inv-meta">
         <div class="inv-thumb" style="${temaBg}">💑</div>
         <div style="flex:1;min-width:0;">
           <div class="inv-name">${nama}</div>
           <div class="inv-date"><i class="ti ti-palette" style="font-size:11px;"></i> ${inv.tema?.nama||'Belum pilih tema'}</div>
-          <div class="inv-status s-${paket}">${paket.toUpperCase()}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+            <span class="inv-status s-${paket}">${paket.toUpperCase()}</span>
+            <span class="status-pill ${inv.is_published?'pill-paid':'pill-pending'}" style="font-size:10px;">${inv.is_published?'Aktif':'Draft'}</span>
+          </div>
         </div>
       </div>
+
+      <!-- Toggle watermark (hanya tampil kalau gratis) -->
+      ${paket === 'gratis' ? `
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--ivory);border-radius:8px;padding:8px 12px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:12px;font-weight:600;">Watermark Invitara</div>
+          <div style="font-size:11px;color:var(--text-muted);">Upgrade ke Standar untuk hapus permanen</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" ${wmAktif?'checked':''} onchange="toggleWatermarkCust('${inv.id}',this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>` : ''}
+
       <div class="inv-actions">
-        <div class="inv-btn" onclick="showKelola('${inv.id}')"><i class="ti ti-layout-grid"></i><span>Kelola</span></div>
         <div class="inv-btn" onclick="previewUndangan('${inv.slug||inv.id}')"><i class="ti ti-eye"></i><span>Preview</span></div>
+        <div class="inv-btn" onclick="showKelola('${inv.id}')"><i class="ti ti-edit"></i><span>Edit</span></div>
         <div class="inv-btn" onclick="shareUndangan('${inv.slug||inv.id}')"><i class="ti ti-share"></i><span>Bagikan</span></div>
         <div class="inv-btn del" onclick="triggerHapus('Hapus undangan \\'${nama}\\'? Data tidak bisa dikembalikan.',()=>hapusUndangan('${inv.id}'))">
           <i class="ti ti-trash"></i><span>Hapus</span>
@@ -138,6 +156,11 @@ async function hapusUndangan(id) {
   if (activeInvId === id) showListUndangan()
   loadInvitations()
   loadStats()
+}
+
+async function toggleWatermarkCust(id, val) {
+  await sb.from('undangan').update({ show_watermark: val }).eq('id', id)
+  toast(val ? 'Watermark diaktifkan' : 'Watermark disembunyikan sementara')
 }
 
 function showListUndangan() {
