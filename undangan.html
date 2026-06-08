@@ -229,7 +229,19 @@ let invData = null
 let targetDate = null
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const slug = window.location.pathname.replace('/','').split('/').pop()
+  // Ambil slug dari berbagai sumber:
+  // 1. Query param ?slug=xxx (dari vercel rewrite)
+  // 2. Pathname langsung /rizky-anisa
+  const params = new URLSearchParams(window.location.search)
+  let slug = params.get('slug')
+  if (!slug) {
+    // ambil dari pathname, buang slash awal
+    const parts = window.location.pathname.split('/').filter(Boolean)
+    slug = parts[parts.length - 1]
+    // abaikan kalau itu nama file HTML
+    if (!slug || slug.endsWith('.html')) slug = null
+  }
+
   if (!slug) { showNotFound(); return }
 
   const { data: inv } = await sb.from('undangan')

@@ -5,8 +5,8 @@
     { "source": "/admin",      "destination": "/dashboard-admin.html" },
     { "source": "/filter-ig",  "destination": "/filter-ig.html" },
     {
-      "source": "/:slug((?!index|auth|dashboard|dashboard-admin|dashboard-customer|filter-ig|templates|images|css|js|vercel).*)",
-      "destination": "/undangan.html"
+      "source": "/:slug((?!index|auth|dashboard|dashboard-admin|dashboard-customer|filter-ig|undangan|templates|images|css|js|vercel)([a-zA-Z0-9_-]+))",
+      "destination": "/undangan.html?slug=:slug"
     }
   ]
 }

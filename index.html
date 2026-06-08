@@ -321,16 +321,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-config.js"></script>
 <script>
-// Cek kalau sudah login, redirect ke dashboard
-window.addEventListener('DOMContentLoaded', async () => {
-  const session = await getSession()
-  if (session) {
-    const profile = await getProfile(session.user.id)
-    window.location.href = profile?.role === 'admin'
-      ? 'dashboard-admin.html'
-      : 'dashboard-customer.html'
-  }
-})
+// Tombol masuk/daftar di navbar sudah mengarah ke auth.html
+// Tidak perlu auto-redirect agar landing page tidak ngelag
 </script>
 </body>
 </html>
