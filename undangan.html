@@ -245,8 +245,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   renderCover(inv)
   document.getElementById('undangan-wrap').style.display = 'block'
-  // watermark untuk gratis
-  if (inv.paket === 'gratis') document.getElementById('watermark').style.display = 'block'
+  // watermark: tampil kalau paket gratis DAN show_watermark tidak diset false oleh admin
+  const showWm = inv.paket === 'gratis' && inv.show_watermark !== false
+  if (showWm) document.getElementById('watermark').style.display = 'block'
 })
 
 function showNotFound() {

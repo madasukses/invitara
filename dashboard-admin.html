@@ -116,15 +116,14 @@
   <nav class="sidebar-nav">
     <div class="nav-section">Panel Admin</div>
     <div class="nav-item active" data-menu="dashboard"  onclick="switchMenu('dashboard')"><i class="ti ti-layout-dashboard"></i> Dashboard</div>
-    <div class="nav-item" data-menu="customers"          onclick="switchMenu('customers')"><i class="ti ti-users"></i> Customers <span class="nav-badge" id="admin-cust-count">0</span></div>
-    <div class="nav-item" data-menu="undangan"           onclick="switchMenu('undangan')"><i class="ti ti-heart"></i> Semua Undangan</div>
-    <div class="nav-item" data-menu="transaksi"          onclick="switchMenu('transaksi')"><i class="ti ti-credit-card"></i> Transaksi</div>
+    <div class="nav-item" data-menu="users"             onclick="switchMenu('users')"><i class="ti ti-users"></i> Users & Undangan <span class="nav-badge" id="admin-cust-count">0</span></div>
+    <div class="nav-item" data-menu="transaksi"         onclick="switchMenu('transaksi')"><i class="ti ti-credit-card"></i> Transaksi</div>
     <div class="nav-section">Konten</div>
-    <div class="nav-item" data-menu="musik"              onclick="switchMenu('musik')"><i class="ti ti-music"></i> Musik</div>
-    <div class="nav-item" data-menu="tema"               onclick="switchMenu('tema')"><i class="ti ti-palette"></i> Tema</div>
-    <div class="nav-item" data-menu="filter-ig"          onclick="switchMenu('filter-ig')"><i class="ti ti-camera"></i> Filter IG</div>
+    <div class="nav-item" data-menu="musik"             onclick="switchMenu('musik')"><i class="ti ti-music"></i> Musik</div>
+    <div class="nav-item" data-menu="tema"              onclick="switchMenu('tema')"><i class="ti ti-palette"></i> Tema</div>
+    <div class="nav-item" data-menu="filter-ig"         onclick="switchMenu('filter-ig')"><i class="ti ti-camera"></i> Filter IG</div>
     <div class="nav-section">Sistem</div>
-    <div class="nav-item" data-menu="pengaturan"         onclick="switchMenu('pengaturan')"><i class="ti ti-settings"></i> Pengaturan</div>
+    <div class="nav-item" data-menu="pengaturan"        onclick="switchMenu('pengaturan')"><i class="ti ti-settings"></i> Pengaturan</div>
   </nav>
   <div class="sidebar-bottom"><button class="btn-logout" onclick="doLogout()"><i class="ti ti-logout" style="font-size:20px;"></i> Logout</button></div>
 </aside>
@@ -159,19 +158,33 @@
       </div>
     </div>
 
-    <!-- CUSTOMERS -->
-    <div class="content-section" id="sec-customers">
-      <div class="admin-table-wrap">
-        <div class="admin-table-header"><h3>Daftar Customer</h3><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari..." oninput="filterTable('a-tbl-cust',this.value)"></div></div>
-        <table class="admin-table" id="a-tbl-cust"><thead><tr><th>Nama</th><th>Email</th><th>Undangan</th><th>Aksi</th></tr></thead><tbody id="a-tb-cust"><tr><td colspan="4" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+    <!-- USERS & UNDANGAN (gabung) -->
+    <div class="content-section" id="sec-users">
+      <!-- Tab switch -->
+      <div style="display:flex;background:var(--ivory);border-radius:10px;padding:4px;margin-bottom:16px;">
+        <div class="auth-tab active" id="utab-cust" onclick="switchUserTab('customers')" style="flex:1;padding:9px;border-radius:7px;font-size:13px;font-weight:500;text-align:center;cursor:pointer;transition:all .2s;">
+          <i class="ti ti-users" style="font-size:14px;"></i> Customers
+        </div>
+        <div class="auth-tab" id="utab-inv" onclick="switchUserTab('undangan')" style="flex:1;padding:9px;border-radius:7px;font-size:13px;font-weight:500;text-align:center;cursor:pointer;transition:all .2s;">
+          <i class="ti ti-heart" style="font-size:14px;"></i> Undangan
+        </div>
       </div>
-    </div>
 
-    <!-- SEMUA UNDANGAN -->
-    <div class="content-section" id="sec-undangan">
-      <div class="admin-table-wrap">
-        <div class="admin-table-header"><h3>Semua Undangan</h3><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari..." oninput="filterTable('a-tbl-inv',this.value)"></div></div>
-        <table class="admin-table" id="a-tbl-inv"><thead><tr><th>Slug / Customer</th><th>Paket</th><th>Views</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="a-tb-inv"><tr><td colspan="5" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+      <!-- Customers -->
+      <div id="panel-customers">
+        <div class="admin-table-wrap">
+          <div class="admin-table-header"><h3>Daftar Customer</h3><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari..." oninput="filterTable('a-tbl-cust',this.value)"></div></div>
+          <table class="admin-table" id="a-tbl-cust"><thead><tr><th>Nama</th><th>Email</th><th>Undangan</th><th>Aksi</th></tr></thead><tbody id="a-tb-cust"><tr><td colspan="4" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- Undangan -->
+      <div id="panel-undangan" style="display:none;">
+        <div class="admin-table-wrap">
+          <div class="admin-table-header"><h3>Semua Undangan</h3><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari..." oninput="filterTable('a-tbl-inv',this.value)"></div></div>
+          <table class="admin-table" id="a-tbl-inv"><thead><tr><th>Slug / Customer</th><th>Paket</th><th>Views</th><th>Aktif</th><th>Watermark</th><th>Aksi</th></tr></thead>
+          <tbody id="a-tb-inv"><tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
+        </div>
       </div>
     </div>
 
@@ -185,9 +198,13 @@
 
     <!-- MUSIK -->
     <div class="content-section" id="sec-musik">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
         <div><div style="font-size:15px;font-weight:600;">Kelola Musik</div><div style="font-size:12px;color:var(--text-muted);">Customer memilih dari daftar ini</div></div>
-        <button class="btn btn-primary btn-sm" onclick="openMusikModal(null)"><i class="ti ti-plus" style="font-size:14px;"></i> Tambah Lagu</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="exportMusik()"><i class="ti ti-download" style="font-size:14px;"></i> Export JSON</button>
+          <label class="btn btn-outline btn-sm" style="cursor:pointer;"><i class="ti ti-upload" style="font-size:14px;"></i> Import JSON<input type="file" accept=".json" style="display:none;" onchange="importMusik(this)"></label>
+          <button class="btn btn-primary btn-sm" onclick="openMusikModal(null)"><i class="ti ti-plus" style="font-size:14px;"></i> Tambah Lagu</button>
+        </div>
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
         <button class="kat-btn-admin active" onclick="filterMusikKat('semua',this)">Semua</button>
@@ -199,16 +216,27 @@
         <button class="kat-btn-admin" onclick="filterMusikKat('Islami',this)">Islami</button>
       </div>
       <div class="admin-table-wrap">
-        <div class="admin-table-header"><div class="search-box"><i class="ti ti-search"></i><input placeholder="Cari judul / artis..." oninput="filterTable('a-tbl-musik',this.value)"></div><div style="font-size:12px;color:var(--text-muted);" id="musik-count-label">0 lagu</div></div>
+        <div class="admin-table-header">
+          <div class="search-box"><i class="ti ti-search"></i><input id="musik-search-input" placeholder="Cari judul / artis..." oninput="searchMusikAdmin(this.value)"></div>
+          <div style="font-size:12px;color:var(--text-muted);" id="musik-count-label">0 lagu</div>
+        </div>
         <table class="admin-table" id="a-tbl-musik"><thead><tr><th>Judul</th><th>Artis</th><th>Kategori</th><th>Paket</th><th>Aktif</th><th>Aksi</th></tr></thead><tbody id="a-tb-musik"><tr><td colspan="6" style="text-align:center;padding:16px;color:var(--text-muted);">Memuat...</td></tr></tbody></table>
       </div>
     </div>
 
     <!-- TEMA -->
     <div class="content-section" id="sec-tema">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-        <div><div style="font-size:15px;font-weight:600;">Kelola Tema</div><div style="font-size:12px;color:var(--text-muted);">Tiap tema punya bundle aset ornamen & background</div></div>
-        <button class="btn btn-primary btn-sm" onclick="openTemaModal(null)"><i class="ti ti-plus" style="font-size:14px;"></i> Tambah Tema</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div><div style="font-size:15px;font-weight:600;">Kelola Tema</div><div style="font-size:12px;color:var(--text-muted);">Duplikasi tema = beda warna & ornamen saja</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="exportTema()"><i class="ti ti-download" style="font-size:14px;"></i> Export JSON</button>
+          <label class="btn btn-outline btn-sm" style="cursor:pointer;"><i class="ti ti-upload" style="font-size:14px;"></i> Import JSON<input type="file" accept=".json" style="display:none;" onchange="importTema(this)"></label>
+          <button class="btn btn-primary btn-sm" onclick="openTemaModal(null)"><i class="ti ti-plus" style="font-size:14px;"></i> Tambah Tema</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:8px 14px;margin-bottom:14px;">
+        <i class="ti ti-search" style="font-size:15px;color:var(--text-muted);"></i>
+        <input id="tema-search-input" oninput="searchTemaAdmin(this.value)" placeholder="Cari nama tema..." style="border:none;background:transparent;font-size:13px;width:100%;outline:none;font-family:inherit;">
       </div>
       <div id="a-tema-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"><div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">Memuat...</div></div>
     </div>
