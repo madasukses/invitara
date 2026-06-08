@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   setText('admin-email', currentProfile.email||'')
   loadStats(); loadCustomers(); loadUndangan(); loadTransaksi(); loadMusik(); loadTema(); loadFilterIG()
   const hash = window.location.hash.replace('#','')||'dashboard'
-  switchMenu(hash)
+  switchMenu(hash === 'customers' || hash === 'undangan' ? 'users' : hash)
 })
 
 function toggleSidebar()  { document.getElementById('sidebar').classList.toggle('show'); document.getElementById('sidebar-overlay').classList.toggle('show') }
@@ -23,8 +23,20 @@ function switchMenu(menu) {
   document.querySelector(`[data-menu="${menu}"]`)?.classList.add('active')
   document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active'))
   document.getElementById('sec-'+menu)?.classList.add('active')
-  const t={dashboard:'Dashboard',customers:'Customers',undangan:'Semua Undangan',transaksi:'Transaksi',musik:'Kelola Musik',tema:'Kelola Tema','filter-ig':'Kelola Filter IG',pengaturan:'Pengaturan'}
+  const t={dashboard:'Dashboard',users:'Users & Undangan',transaksi:'Transaksi',musik:'Kelola Musik',tema:'Kelola Tema','filter-ig':'Kelola Filter IG',pengaturan:'Pengaturan'}
   setText('main-title', t[menu]||menu); window.location.hash=menu; closeSidebar()
+}
+
+function switchUserTab(tab) {
+  document.getElementById('panel-customers').style.display = tab==='customers' ? 'block' : 'none'
+  document.getElementById('panel-undangan').style.display  = tab==='undangan'  ? 'block' : 'none'
+  document.getElementById('utab-cust').classList.toggle('active', tab==='customers')
+  document.getElementById('utab-inv').classList.toggle('active',  tab==='undangan')
+  document.querySelectorAll('#utab-cust, #utab-inv').forEach(t => {
+    t.style.background = t.classList.contains('active') ? 'var(--white)' : 'transparent'
+    t.style.color      = t.classList.contains('active') ? 'var(--text)'  : 'var(--text-muted)'
+    t.style.boxShadow  = t.classList.contains('active') ? '0 2px 8px var(--border)' : 'none'
+  })
 }
 
 async function loadStats() {
@@ -65,9 +77,19 @@ async function loadUndangan() {
     <td><div style="font-weight:500;">${inv.slug||'—'}</div><div style="font-size:11px;color:var(--text-muted);">${inv.profiles?.nama||'—'}</div></td>
     <td><span class="status-pill pill-${inv.paket}">${inv.paket}</span></td>
     <td>${inv.views||0}</td>
-    <td><span class="status-pill ${inv.is_published?'pill-paid':'pill-pending'}">${inv.is_published?'Aktif':'Draft'}</span></td>
+    <td>
+      <label class="toggle-switch" style="display:inline-block;" title="${inv.is_published?'Nonaktifkan':'Aktifkan'}">
+        <input type="checkbox" ${inv.is_published?'checked':''} onchange="togglePublish('${inv.id}',${inv.is_published})">
+        <span class="toggle-slider"></span>
+      </label>
+    </td>
+    <td>
+      <label class="toggle-switch" style="display:inline-block;" title="${inv.show_watermark!==false?'Watermark aktif':'Watermark nonaktif'}">
+        <input type="checkbox" ${inv.show_watermark!==false?'checked':''} onchange="toggleWatermark('${inv.id}',this.checked)">
+        <span class="toggle-slider"></span>
+      </label>
+    </td>
     <td><div style="display:flex;gap:5px;">
-      <button class="tbl-btn" onclick="togglePublish('${inv.id}',${inv.is_published})" title="${inv.is_published?'Nonaktifkan':'Aktifkan'}"><i class="ti ti-${inv.is_published?'eye-off':'eye'}" style="font-size:13px;"></i></button>
       <button class="tbl-btn del" onclick="hapusUndanganAdmin('${inv.id}')"><i class="ti ti-trash" style="font-size:13px;"></i></button>
     </div></td>
   </tr>`).join('')
@@ -115,6 +137,9 @@ function filterMusikKat(kat,btn) {
 async function loadTema() {
   const {data} = await sb.from('tema').select('*').order('urutan')
   allTema=data||[]
+  renderTemaGrid(data)
+}
+function renderTemaGrid(data) {
   const grid=document.getElementById('a-tema-grid')
   if (!grid) return
   grid.innerHTML=(data||[]).map(t=>`
@@ -133,7 +158,7 @@ async function loadTema() {
           <button class="tbl-btn del" style="flex:1;width:auto;padding:6px;" onclick="hapusTema('${t.id}','${t.nama}')"><i class="ti ti-trash" style="font-size:14px;"></i></button>
         </div>
       </div>
-    </div>`).join('')
+    </div>`).join('') || '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--text-muted);">Tidak ditemukan</div>'
 }
 
 async function loadFilterIG() {
@@ -222,7 +247,74 @@ function hapusFilterIG(id,nama) { triggerHapus(`Hapus filter "${nama}"?`,async()
 
 // ── AKSI LAIN ─────────────────────────────────────────────────
 async function togglePublish(id,current) { await sb.from('undangan').update({is_published:!current}).eq('id',id); toast(current?'Dinonaktifkan':'Diaktifkan'); loadUndangan() }
+async function toggleWatermark(id,val) { await sb.from('undangan').update({show_watermark:val}).eq('id',id); toast(val?'Watermark diaktifkan':'Watermark dinonaktifkan') }
 function hapusUndanganAdmin(id) { triggerHapus('Hapus undangan ini?',async()=>{await sb.from('undangan').delete().eq('id',id);loadUndangan();loadStats()}) }
 function hapusUser(id,nama) { triggerHapus(`Hapus user "${nama}"?`,async()=>{await sb.from('profiles').delete().eq('id',id);loadCustomers();loadStats()}) }
 async function konfirmasiPembayaran(id) { await sb.from('transaksi').update({status:'paid',paid_at:new Date().toISOString()}).eq('id',id); toast('Pembayaran dikonfirmasi'); loadTransaksi(); loadStats() }
 function savePengaturan() { toast('Tersimpan! (sambungkan ke tabel pengaturan_sistem sesuai kebutuhan)') }
+
+// ── SEARCH ADMIN ──────────────────────────────────────────────
+let musikSearchVal = '', temaSearchVal = ''
+function searchMusikAdmin(val) {
+  musikSearchVal = val.toLowerCase()
+  const filtered = allMusikAdmin.filter(m =>
+    m.judul.toLowerCase().includes(musikSearchVal) ||
+    (m.artis||'').toLowerCase().includes(musikSearchVal)
+  )
+  renderMusikTable(filtered)
+}
+function searchTemaAdmin(val) {
+  temaSearchVal = val.toLowerCase()
+  const filtered = allTema.filter(t =>
+    t.nama.toLowerCase().includes(temaSearchVal) ||
+    (t.konsep||'').toLowerCase().includes(temaSearchVal) ||
+    (t.kategori||'').toLowerCase().includes(temaSearchVal)
+  )
+  renderTemaGrid(filtered)
+}
+
+// ── EXPORT / IMPORT MUSIK ─────────────────────────────────────
+function exportMusik() {
+  const exportData = allMusikAdmin.map(({id,created_at,...rest}) => rest)
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'})
+  const a = document.createElement('a'); a.download = 'invitara-musik.json'; a.href = URL.createObjectURL(blob); a.click()
+  toast('Export berhasil!')
+}
+async function importMusik(input) {
+  const file = input.files[0]; if (!file) return
+  try {
+    const text = await file.text()
+    const data = JSON.parse(text)
+    if (!Array.isArray(data)) return toast('Format JSON tidak valid', 'err')
+    showSpinner(true)
+    const { error } = await sb.from('musik').insert(data.map(m => ({...m, aktif: m.aktif ?? true})))
+    showSpinner(false)
+    if (error) return toast('Gagal import: ' + error.message, 'err')
+    toast(`${data.length} lagu berhasil diimport!`)
+    loadMusik()
+  } catch(e) { toast('File tidak valid', 'err') }
+  input.value = ''
+}
+
+// ── EXPORT / IMPORT TEMA ──────────────────────────────────────
+function exportTema() {
+  const exportData = allTema.map(({id,created_at,updated_at,...rest}) => rest)
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], {type:'application/json'})
+  const a = document.createElement('a'); a.download = 'invitara-tema.json'; a.href = URL.createObjectURL(blob); a.click()
+  toast('Export berhasil!')
+}
+async function importTema(input) {
+  const file = input.files[0]; if (!file) return
+  try {
+    const text = await file.text()
+    const data = JSON.parse(text)
+    if (!Array.isArray(data)) return toast('Format JSON tidak valid', 'err')
+    showSpinner(true)
+    const { error } = await sb.from('tema').insert(data.map(t => ({...t, aktif: t.aktif ?? true})))
+    showSpinner(false)
+    if (error) return toast('Gagal import: ' + error.message, 'err')
+    toast(`${data.length} tema berhasil diimport!`)
+    loadTema()
+  } catch(e) { toast('File tidak valid', 'err') }
+  input.value = ''
+}

@@ -190,7 +190,16 @@ async function buatUndanganBaru() {
   return data.id
 }
 
-function previewUndangan(slug) { window.open(`/${slug}`, '_blank') }
+async function previewUndangan(slug) {
+  // kalau dipanggil dari tombol kelola (tanpa slug), ambil slug dari DB
+  if (!slug || slug === 'null' || slug === 'undefined') {
+    if (!activeInvId) return toast('Pilih undangan dulu', 'warn')
+    const { data } = await sb.from('undangan').select('slug').eq('id', activeInvId).single()
+    slug = data?.slug
+  }
+  if (!slug) return toast('Slug undangan belum diset', 'warn')
+  window.open(`/${slug}`, '_blank')
+}
 function shareUndangan(slug) {
   const url = `${window.location.origin}/${slug}`
   if (navigator.share) navigator.share({ title:'Undangan Pernikahan', url })
@@ -233,22 +242,29 @@ function renderFeatureGrid() {
     </div>`).join('')
   go.innerHTML = featuresOpsional.map(f => `
     <div class="feature-item${activeFeatureId===f.id?' active-feature':''}${!featureState[f.id]?' off-feature':''}"
-         id="fitem-${f.id}" onclick="showFeatureDetail('${f.id}','${f.label}','${f.icon}')">
-      <div class="feature-toggle-row" onclick="event.stopPropagation()">
-        <label class="toggle-switch">
-          <input type="checkbox" ${featureState[f.id]?'checked':''} onchange="toggleFeature('${f.id}',this.checked)">
+         id="fitem-${f.id}">
+      <div class="feature-toggle-row" onclick="toggleFeature('${f.id}',${!featureState[f.id]});event.stopPropagation()">
+        <label class="toggle-switch" style="pointer-events:none;">
+          <input type="checkbox" ${featureState[f.id]?'checked':''} readonly>
           <span class="toggle-slider"></span>
         </label>
       </div>
-      <i class="${f.icon} feat-icon-ti"></i>
-      <div class="feature-label">${f.label}</div>
-      <div class="feature-desc">${f.desc}</div>
+      <div onclick="showFeatureDetail('${f.id}','${f.label}','${f.icon}')" style="width:100%;display:flex;flex-direction:column;align-items:center;cursor:pointer;">
+        <i class="${f.icon} feat-icon-ti"></i>
+        <div class="feature-label">${f.label}</div>
+        <div class="feature-desc">${f.desc}</div>
+      </div>
     </div>`).join('')
 }
 
 async function toggleFeature(id, val) {
   featureState[id] = val
-  document.getElementById('fitem-'+id)?.classList.toggle('off-feature', !val)
+  const el = document.getElementById('fitem-'+id)
+  if (el) {
+    el.classList.toggle('off-feature', !val)
+    const cb = el.querySelector('input[type=checkbox]')
+    if (cb) cb.checked = val
+  }
   if (activeInvId) await sb.from('undangan').update({ ['fitur_'+id]: val }).eq('id', activeInvId)
 }
 
@@ -333,7 +349,22 @@ async function formPengantin() {
     <div class="form-group"><label class="form-label">Nama Ayah</label><input class="form-input" id="pg-p-ayah" value="${p.nama_ayah||''}"></div>
     <div class="form-group"><label class="form-label">Nama Ibu</label><input class="form-input" id="pg-p-ibu" value="${p.nama_ibu||''}"></div>
   </div>
-  <div class="form-group"><label class="form-label">URL Foto (Supabase Storage)</label><input class="form-input" id="pg-p-foto" type="url" placeholder="https://..." value="${p.foto_url||''}"></div>
+  <div class="form-group">
+    <label class="form-label">Foto Mempelai Pria</label>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="preview-p-foto" style="width:64px;height:64px;border-radius:50%;background:var(--rose-light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;">
+        ${p.foto_url ? `<img src="${p.foto_url}" style="width:100%;height:100%;object-fit:cover;">` : '👨'}
+      </div>
+      <div style="flex:1;">
+        <input type="file" id="upload-p-foto" accept="image/*" style="display:none;" onchange="uploadFoto(this,'p')">
+        <button onclick="document.getElementById('upload-p-foto').click()" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;">
+          <i class="ti ti-upload" style="font-size:14px;"></i> Upload Foto
+        </button>
+        <div id="upload-p-status" style="font-size:11px;color:var(--text-muted);margin-top:4px;">${p.foto_url?'Foto sudah diupload':'Belum ada foto'}</div>
+      </div>
+    </div>
+    <input type="hidden" id="pg-p-foto" value="${p.foto_url||''}">
+  </div>
   <div style="height:1px;background:var(--border);margin:16px 0;"></div>
   <div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;margin-bottom:10px;">MEMPELAI WANITA</div>
   <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" id="pg-w-nama" value="${w.nama_lengkap||''}"></div>
@@ -342,10 +373,59 @@ async function formPengantin() {
     <div class="form-group"><label class="form-label">Nama Ayah</label><input class="form-input" id="pg-w-ayah" value="${w.nama_ayah||''}"></div>
     <div class="form-group"><label class="form-label">Nama Ibu</label><input class="form-input" id="pg-w-ibu" value="${w.nama_ibu||''}"></div>
   </div>
-  <div class="form-group"><label class="form-label">URL Foto (Supabase Storage)</label><input class="form-input" id="pg-w-foto" type="url" placeholder="https://..." value="${w.foto_url||''}"></div>`
+  <div class="form-group">
+    <label class="form-label">Foto Mempelai Wanita</label>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div id="preview-w-foto" style="width:64px;height:64px;border-radius:50%;background:var(--rose-light);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:28px;">
+        ${w.foto_url ? `<img src="${w.foto_url}" style="width:100%;height:100%;object-fit:cover;">` : '👩'}
+      </div>
+      <div style="flex:1;">
+        <input type="file" id="upload-w-foto" accept="image/*" style="display:none;" onchange="uploadFoto(this,'w')">
+        <button onclick="document.getElementById('upload-w-foto').click()" class="btn btn-outline btn-sm" style="width:100%;justify-content:center;">
+          <i class="ti ti-upload" style="font-size:14px;"></i> Upload Foto
+        </button>
+        <div id="upload-w-status" style="font-size:11px;color:var(--text-muted);margin-top:4px;">${w.foto_url?'Foto sudah diupload':'Belum ada foto'}</div>
+      </div>
+    </div>
+    <input type="hidden" id="pg-w-foto" value="${w.foto_url||''}">
+  </div>`
 }
 
-async function loadTemaOptions() {
+async function uploadFoto(input, pihak) {
+  const file = input.files[0]
+  if (!file) return
+  const maxSize = 3 * 1024 * 1024 // 3MB
+  if (file.size > maxSize) return toast('Ukuran foto maksimal 3MB', 'warn')
+
+  const statusEl = document.getElementById(`upload-${pihak}-status`)
+  const previewEl = document.getElementById(`preview-${pihak}-foto`)
+  if (statusEl) statusEl.textContent = 'Mengupload...'
+
+  const ext  = file.name.split('.').pop()
+  const path = `${currentUser.id}/${activeInvId}-${pihak}-${Date.now()}.${ext}`
+
+  const { data, error } = await sb.storage
+    .from('foto-pengantin')
+    .upload(path, file, { upsert: true })
+
+  if (error) {
+    if (statusEl) statusEl.textContent = 'Gagal upload: ' + error.message
+    return toast('Gagal upload foto', 'err')
+  }
+
+  const { data: urlData } = sb.storage.from('foto-pengantin').getPublicUrl(path)
+  const publicUrl = urlData.publicUrl
+
+  // simpan ke hidden input
+  setVal(`pg-${pihak}-foto`, publicUrl)
+
+  // update preview
+  if (previewEl) previewEl.innerHTML = `<img src="${publicUrl}" style="width:100%;height:100%;object-fit:cover;">`
+  if (statusEl) statusEl.textContent = '✓ Foto berhasil diupload'
+  toast('Foto diupload!')
+}
+
+
   const { data: temas } = await sb.from('tema').select('*').eq('aktif',true).order('urutan')
   const el = document.getElementById('tema-options')
   if (!el) return
@@ -701,6 +781,12 @@ async function saveFeature(id) {
       case 'ucapan':    toast('Ucapan otomatis dari tamu'); break
     }
     toast('Tersimpan! ✓')
+    // tutup panel & scroll ke atas grid
+    tutupDetail()
+    setTimeout(() => {
+      const grid = document.getElementById('feature-grid-wajib')
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
   } catch(e) { toast('Gagal: '+e.message,'err') }
   finally { showSpinner(false) }
 }
